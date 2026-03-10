@@ -1,0 +1,44 @@
+# ============================================
+# 04_regression.R
+# Author: Vishnu
+# Day 4 - Multiple Linear Regression
+# ============================================
+
+.libPaths("C:/Users/vishnu reddy/AppData/Local/R/win-library/4.5")
+
+library(tidyverse)
+
+# Load cleaned data
+df <- read_csv("data/cleaned/life_expectancy_cleaned.csv")
+
+# ---- Step 1: Prepare data ----
+df_clean <- df %>%
+  select(life_expectancy, gdp, schooling,
+         total_expenditure, adult_mortality,
+         income_composition_of_resources) %>%
+  drop_na()
+
+cat("Rows used for regression:", nrow(df_clean), "\n")
+
+# ---- Step 2: Build regression model ----
+model <- lm(life_expectancy ~ gdp + schooling +
+              total_expenditure + adult_mortality +
+              income_composition_of_resources,
+            data = df_clean)
+
+# ---- Step 3: View results ----
+cat("\n=== REGRESSION MODEL RESULTS ===\n")
+summary(model)
+
+# ---- Step 4: R-squared ----
+cat("\n=== MODEL PERFORMANCE ===\n")
+cat("R-squared:", round(summary(model)$r.squared, 3), "\n")
+cat("Adjusted R-squared:", round(summary(model)$adj.r.squared, 3), "\n")
+
+# ---- Step 5: Which variables are significant ----
+cat("\n=== SIGNIFICANT PREDICTORS (p < 0.05) ===\n")
+coef_table <- summary(model)$coefficients
+significant <- coef_table[coef_table[,4] < 0.05, ]
+print(round(significant, 4))
+
+cat("\n✅ Regression Analysis Complete!\n")

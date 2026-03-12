@@ -14,7 +14,7 @@ library(maps)
 dir.create("outputs/plots", recursive = TRUE, showWarnings = FALSE)
 
 # Load data
-df <- read_csv("data/life_expectancy_cleaned.csv")
+df <- read_csv("data/cleaned/life_expectancy_cleaned.csv")
 
 # ── PLOT 1: Histogram — Life Expectancy Distribution ────────
 p1 <- ggplot(df, aes(x = life_expectancy)) +

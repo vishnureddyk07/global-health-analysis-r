@@ -1,6 +1,6 @@
 # ============================================================
 # Script: 04_regression.R
-# Author: Mohan | Branch: mohan-regression
+# Author: vishnu reddy | Branch: mohan-regression
 # Project: Global Health Analysis using R
 # ============================================================
 
@@ -92,7 +92,7 @@ dir.create("outputs", recursive = TRUE, showWarnings = FALSE)
 sink("outputs/regression_summary.txt")
 cat("============================================================\n")
 cat("REGRESSION ANALYSIS REPORT — Global Health Analysis using R\n")
-cat("Author: Mohan | Branch: mohan-regression\n")
+cat("Author: Vishnu Reddy | Branch: mohan-regression\n")
 cat("============================================================\n\n")
 
 cat("Simple Linear Regression (Life Expectancy ~ Schooling):\n")

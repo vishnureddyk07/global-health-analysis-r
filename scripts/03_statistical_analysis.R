@@ -1,0 +1,6 @@
+library(tidyverse)
+library(corrplot)
+library(ggcorrplot)
+library(car)
+df <- read_csv("data/cleaned/life_expectancy_cleaned.csv")
+head(df)

@@ -1,69 +1,139 @@
-# ============================================
-# 02_eda.R
-# Author: Vishnu
-# Day 2 - Exploratory Data Analysis
-# ============================================
-
-# Set library path
+# ============================================================
+# Script: 02_eda.R
+# Author: Vishnu | Branch: vishnureddy-eda
+# Project: Global Health Analysis using R
+# ============================================================
+ 
 .libPaths("C:/Users/vishnu reddy/AppData/Local/R/win-library/4.5")
-
-# Load libraries
+ 
 library(tidyverse)
-
-# Load cleaned data
+library(janitor)
+library(ggcorrplot)
+ 
+# ---- Step 1: Load Cleaned Data ----
 df <- read_csv("data/cleaned/life_expectancy_cleaned.csv")
-
-# ---- Step 1: Summary statistics ----
-cat("=== SUMMARY STATISTICS ===\n")
-summary(df$life_expectancy)
-summary(df$gdp)
-summary(df$schooling)
-
-# ---- Step 2: Average life expectancy by status ----
-cat("\n=== AVG LIFE EXPECTANCY: Developed vs Developing ===\n")
+cat("✅ Cleaned data loaded successfully!\n")
+ 
+# ---- Step 2: Basic Structure ----
+cat("\n📌 Dataset Dimensions:\n")
+dim(df)
+ 
+cat("\n📌 Column Names:\n")
+colnames(df)
+ 
+cat("\n📌 Data Types:\n")
+glimpse(df)
+ 
+# ---- Step 3: Summary Statistics ----
+cat("\n📊 Summary Statistics:\n")
+summary(df)
+ 
+# ---- Step 4: Missing Value Analysis ----
+cat("\n🔍 Missing Values Per Column:\n")
+missing_values <- df %>%
+  summarise_all(~ sum(is.na(.))) %>%
+  pivot_longer(everything(),
+               names_to  = "column",
+               values_to = "missing_count") %>%
+  filter(missing_count > 0) %>%
+  arrange(desc(missing_count))
+ 
+print(missing_values)
+ 
+total_missing <- sum(is.na(df))
+cat("Total Missing Values:", total_missing, "\n")
+cat("Missing Percentage:", round(total_missing / (nrow(df) * ncol(df)) * 100, 2), "%\n")
+ 
+# ---- Step 5: Unique Value Counts ----
+cat("\n📌 Unique Countries:", n_distinct(df$country), "\n")
+cat("📌 Year Range:", min(df$year, na.rm = TRUE), "to", max(df$year, na.rm = TRUE), "\n")
+cat("📌 Country Status Groups:\n")
+print(table(df$status))
+ 
+# ---- Step 6: Life Expectancy Summary by Status ----
+cat("\n📊 Life Expectancy by Country Status:\n")
 df %>%
   group_by(status) %>%
   summarise(
-    avg_life = round(mean(life_expectancy, na.rm = TRUE), 1),
-    min_life = min(life_expectancy, na.rm = TRUE),
-    max_life = max(life_expectancy, na.rm = TRUE),
-    count = n()
+    count    = n(),
+    mean_le  = round(mean(life_expectancy, na.rm = TRUE), 2),
+    median_le = round(median(life_expectancy, na.rm = TRUE), 2),
+    min_le   = round(min(life_expectancy, na.rm = TRUE), 2),
+    max_le   = round(max(life_expectancy, na.rm = TRUE), 2),
+    sd_le    = round(sd(life_expectancy, na.rm = TRUE), 2)
   ) %>%
   print()
-
-# ---- Step 3: Top 10 countries by life expectancy (2015) ----
-cat("\n=== TOP 10 COUNTRIES (2015) ===\n")
+ 
+# ---- Step 7: Life Expectancy Summary by Year ----
+cat("\n📊 Average Life Expectancy by Year:\n")
+df %>%
+  group_by(year) %>%
+  summarise(avg_life_expectancy = round(mean(life_expectancy, na.rm = TRUE), 2)) %>%
+  arrange(year) %>%
+  print()
+ 
+# ---- Step 8: Top and Bottom 5 Countries (2015) ----
+cat("\n🏆 Top 5 Countries by Life Expectancy (2015):\n")
 df %>%
   filter(year == 2015) %>%
   arrange(desc(life_expectancy)) %>%
-  select(country, life_expectancy, gdp, schooling) %>%
-  head(10) %>%
+  select(country, status, life_expectancy) %>%
+  head(5) %>%
   print()
-
-# ---- Step 4: Bottom 10 countries by life expectancy (2015) ----
-cat("\n=== BOTTOM 10 COUNTRIES (2015) ===\n")
+ 
+cat("\n⚠️ Bottom 5 Countries by Life Expectancy (2015):\n")
 df %>%
   filter(year == 2015) %>%
   arrange(life_expectancy) %>%
-  select(country, life_expectancy, gdp, schooling) %>%
-  head(10) %>%
+  select(country, status, life_expectancy) %>%
+  head(5) %>%
   print()
-
-# ---- Step 5: Average life expectancy per year ----
-cat("\n=== LIFE EXPECTANCY TREND OVER YEARS ===\n")
+ 
+# ---- Step 9: Correlation Matrix (Numeric Columns) ----
+cat("\n📊 Correlation Matrix (Top Correlations with Life Expectancy):\n")
+numeric_df <- df %>% select(where(is.numeric))
+cor_matrix <- cor(numeric_df, use = "complete.obs")
+ 
+cor_with_le <- cor_matrix["life_expectancy", ] %>%
+  sort(decreasing = TRUE) %>%
+  round(3)
+ 
+print(cor_with_le)
+ 
+# ---- Step 10: Save EDA Summary to File ----
+dir.create("outputs", recursive = TRUE, showWarnings = FALSE)
+ 
+sink("outputs/eda_summary.txt")
+cat("============================================================\n")
+cat("EDA SUMMARY REPORT — Global Health Analysis using R\n")
+cat("Author: Vishnu | Branch: vishnureddy-eda\n")
+cat("============================================================\n\n")
+ 
+cat("Dataset Dimensions:\n")
+cat("Rows:", nrow(df), "| Columns:", ncol(df), "\n\n")
+ 
+cat("Unique Countries:", n_distinct(df$country), "\n")
+cat("Year Range:", min(df$year, na.rm = TRUE), "to", max(df$year, na.rm = TRUE), "\n\n")
+ 
+cat("Country Status Distribution:\n")
+print(table(df$status))
+ 
+cat("\nMissing Values:\n")
+print(missing_values)
+ 
+cat("\nLife Expectancy by Status:\n")
 df %>%
-  group_by(year) %>%
-  summarise(avg_life = round(mean(life_expectancy, na.rm = TRUE), 1)) %>%
+  group_by(status) %>%
+  summarise(
+    mean_le   = round(mean(life_expectancy, na.rm = TRUE), 2),
+    median_le = round(median(life_expectancy, na.rm = TRUE), 2),
+    sd_le     = round(sd(life_expectancy, na.rm = TRUE), 2)
+  ) %>%
   print()
-
-# ---- Step 6: Correlation with life expectancy ----
-cat("\n=== CORRELATION WITH LIFE EXPECTANCY ===\n")
-df %>%
-  select(life_expectancy, gdp, schooling, 
-         total_expenditure, adult_mortality,
-         income_composition_of_resources) %>%
-  cor(use = "complete.obs") %>%
-  round(2) %>%
-  print()
-
-cat("\n✅ EDA Complete!\n")
+ 
+cat("\nTop Correlations with Life Expectancy:\n")
+print(cor_with_le)
+sink()
+ 
+cat("\n✅ EDA summary saved to outputs/eda_summary.txt\n")
+cat("🎉 EDA Complete!\n")

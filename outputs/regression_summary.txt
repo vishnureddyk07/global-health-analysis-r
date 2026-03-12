@@ -1,0 +1,38 @@
+============================================================
+REGRESSION ANALYSIS REPORT — Global Health Analysis using R
+Author: Mohan | Branch: mohan-regression
+============================================================
+
+Simple Linear Regression (Life Expectancy ~ Schooling):
+  R-Squared : 0.6079 
+  Adj R-Squared : 0.6077 
+  RMSE : 6.1966 
+
+Multiple Linear Regression (All Predictors):
+  R-Squared : 0.8372 
+  Adj R-Squared : 0.8365 
+  RMSE : 3.9927 
+
+Significant Predictors (p < 0.05):
+                                     Estimate    Std_Error    t_value
+(Intercept)                      5.225863e+01 6.175163e-01  84.627132
+hiv_aids                        -4.782658e-01 1.786864e-02 -26.765649
+schooling                        1.112943e+00 5.264243e-02  21.141551
+adult_mortality                 -1.535119e-02 8.803093e-04 -17.438399
+income_composition_of_resources  1.083802e+01 7.611035e-01  14.239883
+bmi                              4.689327e-02 5.736845e-03   8.174052
+alcohol                         -2.020008e-01 3.100875e-02  -6.514318
+gdp                              4.376873e-05 7.888189e-06   5.548642
+statusDeveloping                -1.227487e+00 3.193050e-01  -3.844246
+infant_deaths                   -1.677419e-03 6.699086e-04  -2.503952
+                                      p_value
+(Intercept)                      0.000000e+00
+hiv_aids                        6.698551e-136
+schooling                        4.844035e-90
+adult_mortality                  1.121172e-63
+income_composition_of_resources  5.586969e-44
+bmi                              5.117315e-16
+alcohol                          9.127406e-11
+gdp                              3.245508e-08
+statusDeveloping                 1.245478e-04
+infant_deaths                    1.235735e-02
